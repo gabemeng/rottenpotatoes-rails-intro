@@ -11,7 +11,22 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    #session stays throughout different requests
+    #params is for one request only 
+    #rails server -b 0.0.0.0
+    if params.has_key?(:sortby)
+        sortType = params[:sortby]
+        if sortType == 'title'
+            @title_hilite = 'hilite'
+            @movies = Movie.order(:title)
+        else 
+            @release_hilite = 'hilite'
+            @movies = Movie.order(:release_date)
+        end   
+    else
+        @movies = Movie.all
+    end  
+        
   end
 
   def new

@@ -14,7 +14,10 @@ class MoviesController < ApplicationController
     #session stays throughout different requests
     #params is for one request only 
     #rails server -b 0.0.0.0
+    
+    @all_ratings = Movie.possibleRatings
     if params.has_key?(:sortby)
+        @ratings = Hash[@all_ratings.collect {|rating| [rating, 1]}]
         sortType = params[:sortby]
         if sortType == 'title'
             @title_hilite = 'hilite'
@@ -24,7 +27,14 @@ class MoviesController < ApplicationController
             @movies = Movie.order(:release_date)
         end   
     else
-        @movies = Movie.all
+        if params.has_key?(:ratings)
+            @ratings = params[:ratings]
+            chosenRatings = @ratings.keys
+            @movies = Movie.with_ratings(chosenRatings)
+        else 
+            @ratings = Hash[@all_ratings.collect {|rating| [rating, 1]}]
+            @movies = Movie.all 
+        end 
     end  
         
   end
